@@ -1,0 +1,10 @@
+const S=require('./engine.js'); const D=require('./strata.json'); const fs=require('fs');
+const [,,fx='lines',angle='0',cap='round',n='30',only='']=process.argv;
+const o={n:+n,ratio:.56,angle:+angle,cap,fx,snap:true};
+let syms=D.syms; if(only) syms=syms.filter(s=>only.split(',').includes(s.c));
+const cols=16, rows=Math.ceil(syms.length/cols);
+let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cols*104} ${rows*104+120}" width="${cols*104}"><rect width="100%" height="100%" fill="#101113"/>`;
+syms.forEach((s,i)=>{const {d}=S.build(S.tile(s,D.glyphs),o); svg+=`<g transform="translate(${(i%cols)*104+2},${Math.floor(i/cols)*104+2})"><rect width="100" height="100" fill="#18191c"/><path fill="#eee" d="${d}"/></g>`;});
+const w=S.word('Layer by layer',D.glyphs,2); const b=S.build(w.groups,{...o},w.width/2,50);
+svg+=`<g transform="translate(10,${rows*104+10}) scale(${Math.min(1,(cols*104-20)/w.width)})"><path fill="#f6b" d="${b.d}"/></g></svg>`;
+fs.writeFileSync('sheet.svg',svg);
